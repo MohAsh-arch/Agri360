@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agri360 - Smart Agriculture Management</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // Theme management
+        function toggleTheme() {
+            const html = document.documentElement;
+            const isDark = html.classList.contains('dark');
+            if (isDark) {
+                html.classList.remove('dark');
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+        
+        // Load theme on page load
+        window.addEventListener('load', () => {
+            const theme = localStorage.getItem('theme') || 'light';
+            if (theme === 'dark') {
+                document.documentElement.classList.add('dark');
+            }
+        });
+        
+        // Language management
+        function toggleLanguage() {
+            const currentLang = localStorage.getItem('language') || 'en';
+            const newLang = currentLang === 'en' ? 'ar' : 'en';
+            localStorage.setItem('language', newLang);
+            location.reload();
+        }
+        
+        function navigateTo(page) {
+            if (page === 'dashboard') {
+                window.location.href = '/dashboard';
+            } else if (page === 'login') {
+                document.getElementById('loginModal').classList.remove('hidden');
+            }
+        }
+
+        function closeLoginModal() {
+            document.getElementById('loginModal').classList.add('hidden');
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            if (!email || !password) {
+                alert('Please enter both email and password');
+                return;
+            }
+
+            // Show loading state
+            const loginBtn = document.getElementById('loginBtn');
+            const originalText = loginBtn.textContent;
+            loginBtn.textContent = 'Loading...';
+            loginBtn.disabled = true;
+
+            console.log('Attempting login for:', email);
+
+            // Call the API
+            fetch('/api/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ email, password })
+            })
+            .then(response => {
+                console.log('Login response status:', response.status);
+                if (!response.ok) {
+                    throw new Error(`Login failed with status ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Login successful, token:', data.token?.substring(0, 20) + '...');
+                console.log('User data:', data.user?.name);
+                
+                // Store token and user data
+                localStorage.setItem('token', data.token);
+                localStorage.setItem('user', JSON.stringify(data.user));
+                
+                console.log('Token and user stored in localStorage');
+                
+                // Redirect to dashboard
+                console.log('Redirecting to dashboard...');
+                window.location.href = '/dashboard';
+            })
+            .catch(error => {
+                console.error('Error during login:', error);
+                alert('Login failed. Please check your credentials.\n\n' + error.message);
+                loginBtn.textContent = originalText;
+                loginBtn.disabled = false;
+            });
+        }
+    </script>
+</head>
+<body class="bg-white dark:bg-slate-900 text-gray-900 dark:text-white transition-colors">
+    <!-- Navbar -->
+    <nav class="sticky top-0 z-50 border-b border-gray-200 dark:border-gray-700 bg-white/80 dark:bg-slate-900/80 backdrop-blur">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center gap-2">
+                    <span class="text-2xl">🌿</span>
+                    <span class="text-xl font-bold text-green-600">Agri360</span>
+                </div>
+                
+                <div class="flex items-center gap-4">
+                    <button onclick="toggleLanguage()" class="px-3 py-1 rounded bg-gray-200 dark:bg-gray-700 text-sm font-medium hover:bg-gray-300 dark:hover:bg-gray-600 transition">
+                        <span id="lang-btn">العربية</span>
+                    </button>
+                    <button onclick="toggleTheme()" class="px-3 py-1 rounded bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition">
+                        🌙
+                    </button>
+                    <button onclick="navigateTo('login')" class="px-4 py-2 rounded bg-green-600 text-white hover:bg-green-700 transition font-medium">
+                        Login
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="py-20 px-4">
+        <div class="max-w-4xl mx-auto text-center">
+            <h1 class="text-5xl md:text-6xl font-bold mb-6 text-gray-900 dark:text-white">
+                Smart Agriculture Management
+            </h1>
+            <p class="text-xl text-gray-600 dark:text-gray-400 mb-8">
+                Optimize your farm with AI-powered insights, real-time monitoring, and data-driven decisions
+            </p>
+            <button onclick="navigateTo('login')" class="px-8 py-3 rounded-lg bg-green-600 text-white font-bold text-lg hover:bg-green-700 transition">
+                Get Started
+            </button>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="py-20 px-4 bg-gray-50 dark:bg-slate-800">
+        <div class="max-w-6xl mx-auto">
+            <h2 class="text-4xl font-bold text-center mb-16">Features</h2>
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Feature 1 -->
+                <div class="p-6 rounded-lg bg-white dark:bg-slate-700 border border-gray-200 dark:border-gray-600">
+                    <div class="text-4xl mb-4">📊</div>
+                    <h3 class="text-xl font-bold mb-2">Dashboard Analytics</h3>
+                    <p class="text-gray-600 dark:text-gray-400">
+                        Real-time KPIs including farm statistics, revenue tracking, and crop performance metrics
+                    </p>
+                </div>
+
+                <!-- Feature 2 -->
+                <div class="p-6 rounded-lg bg-white dark:bg-slate-700 border border-gray-200 dark:border-gray-600">
+                    <div class="text-4xl mb-4">🌾</div>
+                    <h3 class="text-xl font-bold mb-2">Crop Management</h3>
+                    <p class="text-gray-600 dark:text-gray-400">
+                        Plan and optimize crop cultivation with AI recommendations and historical data
+                    </p>
+                </div>
+
+                <!-- Feature 3 -->
+                <div class="p-6 rounded-lg bg-white dark:bg-slate-700 border border-gray-200 dark:border-gray-600">
+                    <div class="text-4xl mb-4">💧</div>
+                    <h3 class="text-xl font-bold mb-2">Water Management</h3>
+                    <p class="text-gray-600 dark:text-gray-400">
+                        Smart irrigation scheduling and water conservation recommendations
+                    </p>
+                </div>
+
+                <!-- Feature 4 -->
+                <div class="p-6 rounded-lg bg-white dark:bg-slate-700 border border-gray-200 dark:border-gray-600">
+                    <div class="text-4xl mb-4">💼</div>
+                    <h3 class="text-xl font-bold mb-2">Business Planning</h3>
+                    <p class="text-gray-600 dark:text-gray-400">
+                        Generate detailed business plans and financial projections
+                    </p>
+                </div>
+
+                <!-- Feature 5 -->
+                <div class="p-6 rounded-lg bg-white dark:bg-slate-700 border border-gray-200 dark:border-gray-600">
+                    <div class="text-4xl mb-4">🧪</div>
+                    <h3 class="text-xl font-bold mb-2">Fertilizer Recommendations</h3>
+                    <p class="text-gray-600 dark:text-gray-400">
+                        Optimize soil health with personalized fertilizer recommendations
+                    </p>
+                </div>
+
+                <!-- Feature 6 -->
+                <div class="p-6 rounded-lg bg-white dark:bg-slate-700 border border-gray-200 dark:border-gray-600">
+                    <div class="text-4xl mb-4">🌐</div>
+                    <h3 class="text-xl font-bold mb-2">Multi-Language Support</h3>
+                    <p class="text-gray-600 dark:text-gray-400">
+                        Access the platform in English or Arabic with full RTL support
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Test Credentials Section -->
+    <section class="py-20 px-4">
+        <div class="max-w-2xl mx-auto text-center">
+            <h2 class="text-3xl font-bold mb-8">Ready to Get Started?</h2>
+            <div class="bg-blue-50 dark:bg-blue-900/30 border-2 border-blue-200 dark:border-blue-700 rounded-lg p-8">
+                <p class="text-lg font-semibold mb-4">Use these test credentials to login:</p>
+                <div class="font-mono text-left bg-gray-900 text-green-400 p-4 rounded mb-4">
+                    <p>Email: <span class="font-bold">ahmed@example.com</span></p>
+                    <p>Password: <span class="font-bold">password123</span></p>
+                </div>
+                <button onclick="navigateTo('login')" class="px-6 py-3 rounded-lg bg-green-600 text-white font-bold hover:bg-green-700 transition">
+                    Login Now
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="border-t border-gray-200 dark:border-gray-700 py-8 px-4 bg-gray-50 dark:bg-slate-800">
+        <div class="max-w-6xl mx-auto text-center text-gray-600 dark:text-gray-400">
+            <p>&copy; 2025 Agri360. All rights reserved.</p>
+            <p class="text-sm mt-2">Smart Agriculture for Everyone</p>
+        </div>
+    </footer>
+
+    <script>
+        // Update language button text based on current language
+        function updateLanguageButton() {
+            const currentLang = localStorage.getItem('language') || 'en';
+            const langBtn = document.getElementById('lang-btn');
+            if (langBtn) {
+                langBtn.textContent = currentLang === 'en' ? 'العربية' : 'English';
+            }
+        }
+        
+        updateLanguageButton();
+        window.addEventListener('load', updateLanguageButton);
+    </script>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+        <div class="bg-white dark:bg-slate-800 rounded-lg shadow-xl max-w-md w-full">
+            <div class="flex justify-between items-center p-6 border-b border-gray-200 dark:border-gray-700">
+                <h2 class="text-xl font-bold">Login to Agri360</h2>
+                <button onclick="closeLoginModal()" class="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 text-2xl leading-none">&times;</button>
+            </div>
+            
+            <form onsubmit="handleLogin(event)" class="p-6 space-y-4">
+                <div>
+                    <label class="block text-sm font-semibold mb-2">Email</label>
+                    <input 
+                        type="email" 
+                        id="email"
+                        placeholder="ahmed@example.com"
+                        class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-green-500"
+                    >
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-semibold mb-2">Password</label>
+                    <input 
+                        type="password" 
+                        id="password"
+                        placeholder="Enter your password"
+                        class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-green-500"
+                    >
+                </div>
+
+                <div class="bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700 p-3 rounded text-sm">
+                    <p class="font-semibold">Test Credentials:</p>
+                    <p>Email: <span class="font-mono">ahmed@example.com</span></p>
+                    <p>Password: <span class="font-mono">password123</span></p>
+                </div>
+                
+                <button 
+                    type="submit"
+                    id="loginBtn"
+                    class="w-full py-2 px-4 rounded-lg bg-green-600 text-white font-bold hover:bg-green-700 transition disabled:opacity-50"
+                >
+                    Sign In
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Close modal when clicking outside -->
+    <script>
+        document.getElementById('loginModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeLoginModal();
+            }
+        });
+    </script>
+</body>
+</html>

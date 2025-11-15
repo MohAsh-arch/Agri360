@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marketplace - Agri360</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-white dark:bg-slate-900 text-gray-900 dark:text-white transition-colors">
+    <nav class="sticky top-0 z-50 border-b border-gray-200 dark:border-gray-700 bg-white/80 dark:bg-slate-900/80 backdrop-blur">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center gap-4">
+                    <button onclick="goBack()" class="text-2xl hover:bg-gray-200 dark:hover:bg-gray-700 p-2 rounded">← Back</button>
+                    <h1 class="text-2xl font-bold text-green-600">🌾 Agri360</h1>
+                </div>
+                <div class="flex items-center gap-4">
+                    <button onclick="toggleTheme()" class="p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700"><span id="theme-icon">🌙</span></button>
+                    <button onclick="logout()" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">Logout</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="mb-8">
+            <h2 class="text-3xl font-bold mb-2">🛒 Marketplace</h2>
+            <p class="text-gray-600 dark:text-gray-400">Buy and sell agricultural products</p>
+        </div>
+
+        <!-- Tabs -->
+        <div class="flex gap-4 mb-8 border-b border-gray-200 dark:border-gray-700">
+            <button onclick="switchTab('listings')" id="listingsTab" class="px-4 py-2 border-b-2 border-pink-600 font-semibold">📦 Listings</button>
+            <button onclick="switchTab('create')" id="createTab" class="px-4 py-2 text-gray-600 dark:text-gray-400">➕ Create Listing</button>
+        </div>
+
+        <!-- Listings View -->
+        <div id="listingsView" class="block">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div id="listingsList" class="col-span-3">
+                    <p class="text-gray-500 dark:text-gray-400">Loading listings...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Create Listing View -->
+        <div id="createView" class="hidden">
+            <div class="max-w-2xl mx-auto">
+                <form id="listingForm" class="bg-white dark:bg-slate-800 rounded-lg shadow p-8 border border-gray-200 dark:border-gray-700 space-y-6">
+                    <div>
+                        <label class="block text-sm font-semibold mb-2">Product Name</label>
+                        <input type="text" id="productName" required placeholder="e.g., Organic Wheat" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-slate-700">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-2">Category</label>
+                        <select id="category" required class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-slate-700">
+                            <option value="">Select...</option>
+                            <option value="grains">🌾 Grains</option>
+                            <option value="vegetables">🥬 Vegetables</option>
+                            <option value="fruits">🍎 Fruits</option>
+                            <option value="equipment">🚜 Equipment</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-2">Price per Unit ($)</label>
+                        <input type="number" id="price" required min="0" step="0.01" placeholder="0.00" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-slate-700">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-2">Quantity</label>
+                        <input type="number" id="quantity" required min="1" step="1" placeholder="e.g., 100" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-slate-700">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-2">Description</label>
+                        <textarea id="description" required placeholder="Describe your product..." rows="4" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-slate-700"></textarea>
+                    </div>
+                    <div class="flex gap-4">
+                        <button type="submit" class="flex-1 px-6 py-3 bg-pink-600 text-white rounded-lg hover:bg-pink-700 font-semibold">📦 Create Listing</button>
+                        <button type="reset" class="px-6 py-3 bg-gray-300 dark:bg-gray-700 rounded-lg">Clear</button>
+                    </div>
+                    <div class="p-4 bg-blue-50 dark:bg-blue-900/30 rounded-lg border border-blue-200 dark:border-blue-700">
+                        <p class="text-sm font-mono text-blue-900 dark:text-blue-200"><strong>API:</strong> POST /api/marketplace</p>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        function toggleTheme() {
+            const html = document.documentElement;
+            const isDark = html.classList.contains('dark');
+            if (isDark) {
+                html.classList.remove('dark');
+                localStorage.setItem('theme', 'light');
+                document.getElementById('theme-icon').textContent = '🌙';
+            } else {
+                html.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+                document.getElementById('theme-icon').textContent = '☀️';
+            }
+        }
+
+        function goBack() { window.location.href = '/dashboard'; }
+        function logout() { localStorage.removeItem('token'); localStorage.removeItem('user'); window.location.href = '/'; }
+
+        function switchTab(tab) {
+            document.getElementById('listingsView').classList.add('hidden');
+            document.getElementById('createView').classList.add('hidden');
+            document.getElementById('listingsTab').classList.remove('border-b-2', 'border-pink-600');
+            document.getElementById('createTab').classList.remove('border-b-2', 'border-pink-600');
+
+            if (tab === 'listings') {
+                document.getElementById('listingsView').classList.remove('hidden');
+                document.getElementById('listingsTab').classList.add('border-b-2', 'border-pink-600', 'font-semibold');
+            } else {
+                document.getElementById('createView').classList.remove('hidden');
+                document.getElementById('createTab').classList.add('border-b-2', 'border-pink-600', 'font-semibold');
+            }
+        }
+
+        window.addEventListener('load', () => {
+            const theme = localStorage.getItem('theme') || 'light';
+            if (theme === 'dark') {
+                document.documentElement.classList.add('dark');
+                document.getElementById('theme-icon').textContent = '☀️';
+            }
+            initPage();
+        });
+
+        async function initPage() {
+            const token = localStorage.getItem('token');
+            if (!token) { window.location.href = '/'; return; }
+            await loadListings();
+            document.getElementById('listingForm').addEventListener('submit', handleCreateListing);
+        }
+
+        async function loadListings() {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch('/api/marketplace', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (!response.ok) throw new Error('Failed to load');
+                const data = await response.json();
+                const listings = data.data || data.listings || [];
+                
+                const container = document.getElementById('listingsList');
+                if (listings.length === 0) {
+                    container.innerHTML = '<p class="text-gray-500">No listings yet</p>';
+                    return;
+                }
+
+                container.innerHTML = listings.map(item => `
+                    <div class="bg-white dark:bg-slate-800 rounded-lg shadow p-6 border border-gray-200 dark:border-gray-700">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-xl font-bold">${item.name || item.productName}</h3>
+                            <span class="text-xl">${item.emoji || '📦'}</span>
+                        </div>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">${item.category}</p>
+                        <p class="text-gray-700 dark:text-gray-300 mb-4">${item.description}</p>
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <p class="text-2xl font-bold text-pink-600">$${item.price}</p>
+                                <p class="text-sm text-gray-600">Stock: ${item.quantity}</p>
+                            </div>
+                            <button onclick="alert('View: ${item._id}')" class="px-4 py-2 bg-pink-600 text-white rounded hover:bg-pink-700">View</button>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        async function handleCreateListing(e) {
+            e.preventDefault();
+            const token = localStorage.getItem('token');
+            if (!token) { alert('Please log in'); return; }
+
+            try {
+                const formData = {
+                    productName: document.getElementById('productName').value,
+                    category: document.getElementById('category').value,
+                    price: parseFloat(document.getElementById('price').value),
+                    quantity: parseInt(document.getElementById('quantity').value),
+                    description: document.getElementById('description').value
+                };
+
+                const response = await fetch('/api/marketplace', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                if (!response.ok) throw new Error('Failed to create');
+                alert('Listing created successfully!');
+                document.getElementById('listingForm').reset();
+                switchTab('listings');
+                await loadListings();
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+    </script>
+</body>
+</html>

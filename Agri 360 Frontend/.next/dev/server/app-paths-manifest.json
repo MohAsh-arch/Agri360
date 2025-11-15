@@ -1,0 +1,13 @@
+{
+  "/chat/page": "app/chat/page.js",
+  "/dashboard/market-plan/page": "app/dashboard/market-plan/page.js",
+  "/dashboard/marketplace/page": "app/dashboard/marketplace/page.js",
+  "/dashboard/page": "app/dashboard/page.js",
+  "/farms/page": "app/farms/page.js",
+  "/harvest/page": "app/harvest/page.js",
+  "/page": "app/page.js",
+  "/plans/page": "app/plans/page.js",
+  "/profile/page": "app/profile/page.js",
+  "/signin/page": "app/signin/page.js",
+  "/signup/page": "app/signup/page.js"
+}

@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crop Planning - Agri360</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-white dark:bg-slate-900 text-gray-900 dark:text-white transition-colors" dir="ltr">
+    <!-- Navbar -->
+    <nav class="sticky top-0 z-50 border-b border-gray-200 dark:border-gray-700 bg-white/80 dark:bg-slate-900/80 backdrop-blur">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center gap-4">
+                    <button onclick="goBack()" class="text-2xl hover:bg-gray-200 dark:hover:bg-gray-700 p-2 rounded">
+                        ← <span class="label">Back</span>
+                    </button>
+                    <h1 class="text-2xl font-bold text-green-600">🌾 Agri360</h1>
+                </div>
+                <div class="flex items-center gap-4">
+                    <button onclick="toggleLanguage()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold" id="langBtn">العربية</button>
+                    <button onclick="toggleTheme()" class="p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700">
+                        <span id="theme-icon">🌙</span>
+                    </button>
+                    <button onclick="logout()" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 label">
+                        Logout
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Loading State -->
+    <div id="loading" class="fixed inset-0 bg-black/50 flex items-center justify-center z-40 hidden">
+        <div class="bg-white dark:bg-slate-800 rounded-lg p-8 text-center">
+            <div class="animate-spin text-4xl mb-4">⏳</div>
+            <p class="text-lg font-semibold label">Processing</p>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Page Header -->
+        <div class="mb-8">
+            <h2 class="text-3xl font-bold mb-2">🌱 <span class="label">Crop Planning</span></h2>
+            <p class="text-gray-600 dark:text-gray-400 label">Get AI-powered recommendations for your crops</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Form Section -->
+            <div>
+                <div class="bg-white dark:bg-slate-800 rounded-lg shadow p-8 border border-gray-200 dark:border-gray-700">
+                    <h3 class="text-2xl font-bold mb-6">📋 <span class="label">Create Crop Plan</span></h3>
+                    
+                    <form id="cropForm" class="space-y-6">
+                        <!-- Crop Type -->
+                        <div>
+                            <label class="block text-sm font-semibold mb-2 label">Crop Type</label>
+                            <select id="cropType" required class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-green-500">
+                                <option value="">Select crop...</option>
+                                <option value="wheat">🌾 Wheat</option>
+                                <option value="corn">🌽 Corn</option>
+                                <option value="rice">🍚 Rice</option>
+                                <option value="tomato">🍅 Tomato</option>
+                                <option value="potato">🥔 Potato</option>
+                                <option value="cotton">🏷️ Cotton</option>
+                            </select>
+                        </div>
+
+                        <!-- Planting Area -->
+                        <div>
+                            <label class="block text-sm font-semibold mb-2 label">Planting Area (acres)</label>
+                            <input type="number" id="plantingArea" required min="0.1" step="0.1" placeholder="e.g., 10.5" 
+                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-green-500">
+                        </div>
+
+                        <!-- Season -->
+                        <div>
+                            <label class="block text-sm font-semibold mb-2 label">Planting Season</label>
+                            <select id="season" required class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-green-500">
+                                <option value="">Select season...</option>
+                                <option value="spring">🌸 Spring</option>
+                                <option value="summer">☀️ Summer</option>
+                                <option value="fall">🍂 Fall</option>
+                                <option value="winter">❄️ Winter</option>
+                            </select>
+                        </div>
+
+                        <!-- Soil Type -->
+                        <div>
+                            <label class="block text-sm font-semibold mb-2 label">Soil Type</label>
+                            <select id="soilType" required class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-green-500">
+                                <option value="">Select soil type...</option>
+                                <option value="loamy">🟤 Loamy</option>
+                                <option value="sandy">🏜️ Sandy</option>
+                                <option value="clayey">⚫ Clayey</option>
+                                <option value="silty">⚪ Silty</option>
+                            </select>
+                        </div>
+
+                        <!-- Rainfall -->
+                        <div>
+                            <label class="block text-sm font-semibold mb-2 label">Expected Rainfall (mm)</label>
+                            <input type="number" id="rainfall" required min="0" step="1" placeholder="e.g., 600" 
+                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-green-500">
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="flex gap-4 pt-4">
+                            <button type="submit" class="flex-1 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 font-semibold transition label">
+                                🚀 Generate Plan
+                            </button>
+                            <button type="reset" class="px-6 py-3 bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg hover:bg-gray-400 font-semibold transition label">
+                                Clear
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- API Endpoint Info -->
+                    <div class="mt-8 p-4 bg-blue-50 dark:bg-blue-900/30 rounded-lg border border-blue-200 dark:border-blue-700">
+                        <p class="text-sm font-mono text-blue-900 dark:text-blue-200">
+                            <strong>API:</strong> POST /api/crops/plan
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results Section -->
+            <div class="lg:col-span-1">
+                <div id="resultsContainer" class="bg-white dark:bg-slate-800 rounded-lg shadow p-8 border border-gray-200 dark:border-gray-700 hidden">
+                    <h3 class="text-xl font-bold mb-4">✅ Plan Results</h3>
+                    
+                    <div class="space-y-4">
+                        <div id="resultContent" class="text-sm space-y-3"></div>
+                    </div>
+
+                    <button onclick="clearResults()" class="w-full mt-4 px-4 py-2 bg-gray-300 dark:bg-gray-700 rounded-lg hover:bg-gray-400 font-semibold transition">
+                        Clear Results
+                    </button>
+                </div>
+
+                <!-- Empty State -->
+                <div id="emptyState" class="bg-white dark:bg-slate-800 rounded-lg shadow p-8 border border-gray-200 dark:border-gray-700 border-dashed text-center">
+                    <p class="text-4xl mb-2">📝</p>
+                    <p class="font-semibold">No plan yet</p>
+                    <p class="text-sm text-gray-600 dark:text-gray-400">Fill the form and generate a plan</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Saved Plans Section -->
+        <div class="mt-8 bg-white dark:bg-slate-800 rounded-lg shadow p-8 border border-gray-200 dark:border-gray-700">
+            <h3 class="text-2xl font-bold mb-6">📚 Your Crop Plans</h3>
+            <div id="plansList" class="space-y-4">
+                <p class="text-gray-500 dark:text-gray-400">Loading plans...</p>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Translations
+        const translations = {
+            en: {
+                'Back': 'Back',
+                'Crop Planning': 'Crop Planning',
+                'Get AI-powered recommendations for your crops': 'Get AI-powered recommendations for your crops',
+                'Create Crop Plan': 'Create Crop Plan',
+                'Crop Type': 'Crop Type',
+                'Planting Area (acres)': 'Planting Area (acres)',
+                'Planting Season': 'Planting Season',
+                'Soil Type': 'Soil Type',
+                'Expected Rainfall (mm)': 'Expected Rainfall (mm)',
+                'Generate Plan': 'Generate Plan',
+                'Clear': 'Clear',
+                'Plan Results': 'Plan Results',
+                'Clear Results': 'Clear Results',
+                'Fill the form and click "Generate Plan" to see results': 'Fill the form and click "Generate Plan" to see results',
+                'Processing': 'Processing',
+                'Logout': 'Logout',
+                'Recommended Planting Date': 'Recommended Planting Date',
+                'Estimated Yield': 'Estimated Yield',
+                'Estimated Revenue': 'Estimated Revenue',
+                'Soil Requirements': 'Soil Requirements',
+                'Water Needs': 'Water Needs',
+                'Fertilizer Schedule': 'Fertilizer Schedule',
+                'Stage': 'Stage',
+                'Fertilizer': 'Fertilizer',
+                'Amount': 'Amount'
+            },
+            ar: {
+                'Back': 'رجوع',
+                'Crop Planning': 'تخطيط المحاصيل',
+                'Get AI-powered recommendations for your crops': 'احصل على توصيات مدعومة بالذكاء الاصطناعي لمحاصيلك',
+                'Create Crop Plan': 'إنشاء خطة المحصول',
+                'Crop Type': 'نوع المحصول',
+                'Planting Area (acres)': 'منطقة الزراعة (فدان)',
+                'Planting Season': 'موسم الزراعة',
+                'Soil Type': 'نوع التربة',
+                'Expected Rainfall (mm)': 'الأمطار المتوقعة (ملم)',
+                'Generate Plan': 'إنشاء خطة',
+                'Clear': 'مسح',
+                'Plan Results': 'نتائج الخطة',
+                'Clear Results': 'مسح النتائج',
+                'Fill the form and click "Generate Plan" to see results': 'ملء النموذج والنقر على "إنشاء خطة" لرؤية النتائج',
+                'Processing': 'جاري المعالجة',
+                'Logout': 'تسجيل الخروج',
+                'Recommended Planting Date': 'تاريخ الزراعة الموصى به',
+                'Estimated Yield': 'المحصول المتوقع',
+                'Estimated Revenue': 'الإيراد المتوقع',
+                'Soil Requirements': 'متطلبات التربة',
+                'Water Needs': 'احتياجات المياه',
+                'Fertilizer Schedule': 'جدول التسميد',
+                'Stage': 'المرحلة',
+                'Fertilizer': 'سماد',
+                'Amount': 'الكمية'
+            }
+        };
+
+        let currentLanguage = localStorage.getItem('language') || 'en';
+
+        // Apply translations
+        function applyTranslations() {
+            const lang = translations[currentLanguage] || translations.en;
+            document.querySelectorAll('.label').forEach(elem => {
+                const text = elem.textContent.trim();
+                if (lang[text]) {
+                    elem.textContent = lang[text];
+                }
+            });
+            
+            // Handle placeholder translations
+            document.getElementById('plantingArea').placeholder = currentLanguage === 'ar' ? 'مثال: 10.5' : 'e.g., 10.5';
+            document.getElementById('rainfall').placeholder = currentLanguage === 'ar' ? 'مثال: 600' : 'e.g., 600';
+            
+            // Update direction
+            document.documentElement.dir = currentLanguage === 'ar' ? 'rtl' : 'ltr';
+        }
+
+        function toggleLanguage() {
+            currentLanguage = currentLanguage === 'en' ? 'ar' : 'en';
+            localStorage.setItem('language', currentLanguage);
+            document.getElementById('langBtn').textContent = currentLanguage === 'en' ? 'العربية' : 'English';
+            applyTranslations();
+        }
+
+        function toggleTheme() {
+            const theme = localStorage.getItem('theme') || 'light';
+            const newTheme = theme === 'light' ? 'dark' : 'light';
+            localStorage.setItem('theme', newTheme);
+            
+            if (newTheme === 'dark') {
+                document.documentElement.classList.add('dark');
+                document.getElementById('theme-icon').textContent = '☀️';
+            } else {
+                document.documentElement.classList.remove('dark');
+                document.getElementById('theme-icon').textContent = '🌙';
+            }
+        }
+
+        function goBack() {
+            window.location.href = '/dashboard';
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = '/';
+        }
+
+        // Load theme and language on page load
+        window.addEventListener('load', () => {
+            const theme = localStorage.getItem('theme') || 'light';
+            if (theme === 'dark') {
+                document.documentElement.classList.add('dark');
+                document.getElementById('theme-icon').textContent = '☀️';
+            }
+            
+            currentLanguage = localStorage.getItem('language') || 'en';
+            document.getElementById('langBtn').textContent = currentLanguage === 'en' ? 'العربية' : 'English';
+            applyTranslations();
+
+            initPage();
+        });
+
+        async function initPage() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                window.location.href = '/';
+                return;
+            }
+
+            document.getElementById('cropForm').addEventListener('submit', handleFormSubmit);
+        }
+
+        async function handleFormSubmit(e) {
+            e.preventDefault();
+            
+            const token = localStorage.getItem('token');
+            if (!token) {
+                alert('Please log in first');
+                return;
+            }
+
+            document.getElementById('loading').classList.remove('hidden');
+
+            try {
+                const formData = {
+                    cropType: document.getElementById('cropType').value,
+                    farmArea: parseFloat(document.getElementById('plantingArea').value),
+                    season: document.getElementById('season').value,
+                    soilType: document.getElementById('soilType').value,
+                    expectedRainfall: parseFloat(document.getElementById('rainfall').value)
+                };
+
+                console.log('Sending request:', formData);
+
+                const response = await fetch('/api/crops/plan', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.message || 'Failed to create plan');
+                }
+
+                const result = await response.json();
+                console.log('Result received:', result);
+                displayResults(result);
+
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error: ' + error.message);
+            } finally {
+                document.getElementById('loading').classList.add('hidden');
+            }
+        }
+
+        function displayResults(result) {
+            const container = document.getElementById('resultsContainer');
+            const content = document.getElementById('resultContent');
+            const empty = document.getElementById('emptyState');
+            const lang = translations[currentLanguage];
+
+            let html = '';
+
+            // Extract data from nested structure
+            const data = result.data || result;
+
+            if (data.recommendedPlantingDate) {
+                html += `
+                    <div class="p-4 bg-green-50 dark:bg-green-900/30 rounded border border-green-200 dark:border-green-700">
+                        <p class="font-semibold text-green-700 dark:text-green-300">📅 ${lang['Recommended Planting Date']}</p>
+                        <p class="text-lg">${data.recommendedPlantingDate}</p>
+                    </div>
+                `;
+            }
+
+            if (data.estimatedYield) {
+                html += `
+                    <div class="p-4 bg-blue-50 dark:bg-blue-900/30 rounded border border-blue-200 dark:border-blue-700">
+                        <p class="font-semibold text-blue-700 dark:text-blue-300">🌾 ${lang['Estimated Yield']}</p>
+                        <p class="text-lg">${data.estimatedYield}</p>
+                    </div>
+                `;
+            }
+
+            if (data.estimatedRevenue) {
+                html += `
+                    <div class="p-4 bg-yellow-50 dark:bg-yellow-900/30 rounded border border-yellow-200 dark:border-yellow-700">
+                        <p class="font-semibold text-yellow-700 dark:text-yellow-300">💰 ${lang['Estimated Revenue']}</p>
+                        <p class="text-lg">${data.estimatedRevenue}</p>
+                    </div>
+                `;
+            }
+
+            if (data.soilRequirements) {
+                html += `
+                    <div class="p-4 bg-orange-50 dark:bg-orange-900/30 rounded border border-orange-200 dark:border-orange-700">
+                        <p class="font-semibold text-orange-700 dark:text-orange-300">🌍 ${lang['Soil Requirements']}</p>
+                        <p>${data.soilRequirements}</p>
+                    </div>
+                `;
+            }
+
+            if (data.waterNeeds) {
+                html += `
+                    <div class="p-4 bg-cyan-50 dark:bg-cyan-900/30 rounded border border-cyan-200 dark:border-cyan-700">
+                        <p class="font-semibold text-cyan-700 dark:text-cyan-300">💧 ${lang['Water Needs']}</p>
+                        <p>${data.waterNeeds}</p>
+                    </div>
+                `;
+            }
+
+            if (data.fertiliserSchedule && Array.isArray(data.fertiliserSchedule)) {
+                html += `
+                    <div class="p-4 bg-purple-50 dark:bg-purple-900/30 rounded border border-purple-200 dark:border-purple-700">
+                        <p class="font-semibold text-purple-700 dark:text-purple-300">🧪 ${lang['Fertilizer Schedule']}</p>
+                        <div class="mt-3 space-y-2">
+                            ${data.fertiliserSchedule.map(f => `
+                                <div class="text-sm p-2 bg-white dark:bg-slate-700 rounded">
+                                    <p class="font-medium">${f.stage}</p>
+                                    <p>${f.fertilizer} - ${f.amount}</p>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+
+            content.innerHTML = html || `<p class="text-green-600">✅ Plan created successfully</p>`;
+            container.classList.remove('hidden');
+            empty.classList.add('hidden');
+        }
+
+        function clearResults() {
+            document.getElementById('resultsContainer').classList.add('hidden');
+            document.getElementById('emptyState').classList.remove('hidden');
+            document.getElementById('cropForm').reset();
+        }
+    </script>
+</body>
+</html>

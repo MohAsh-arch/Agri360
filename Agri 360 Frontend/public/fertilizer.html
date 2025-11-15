@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fertilizer Recommendations - Agri360</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-white dark:bg-slate-900 text-gray-900 dark:text-white transition-colors">
+    <!-- Navbar -->
+    <nav class="sticky top-0 z-50 border-b border-gray-200 dark:border-gray-700 bg-white/80 dark:bg-slate-900/80 backdrop-blur">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center gap-4">
+                    <button onclick="goBack()" class="text-2xl hover:bg-gray-200 dark:hover:bg-gray-700 p-2 rounded">
+                        ← Back
+                    </button>
+                    <h1 class="text-2xl font-bold text-green-600">🌾 Agri360</h1>
+                </div>
+                <div class="flex items-center gap-4">
+                    <button onclick="toggleTheme()" class="p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700">
+                        <span id="theme-icon">🌙</span>
+                    </button>
+                    <button onclick="logout()" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">
+                        Logout
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Loading State -->
+    <div id="loading" class="fixed inset-0 bg-black/50 flex items-center justify-center z-40 hidden">
+        <div class="bg-white dark:bg-slate-800 rounded-lg p-8 text-center">
+            <div class="animate-spin text-4xl mb-4">⏳</div>
+            <p class="text-lg font-semibold">Computing Recommendations...</p>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Page Header -->
+        <div class="mb-8">
+            <h2 class="text-3xl font-bold mb-2">🧪 Fertilizer Recommendations</h2>
+            <p class="text-gray-600 dark:text-gray-400">Get NPK recommendations for your crops</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Form Section -->
+            <div class="lg:col-span-2">
+                <div class="bg-white dark:bg-slate-800 rounded-lg shadow p-8 border border-gray-200 dark:border-gray-700">
+                    <h3 class="text-2xl font-bold mb-6">📋 Soil Analysis</h3>
+                    
+                    <form id="fertilizerForm" class="space-y-6">
+                        <!-- Farm Selection -->
+                        <div>
+                            <label class="block text-sm font-semibold mb-2">Select Farm</label>
+                            <select id="farmId" required class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-amber-500">
+                                <option value="">Loading farms...</option>
+                            </select>
+                        </div>
+
+                        <!-- Crop Type -->
+                        <div>
+                            <label class="block text-sm font-semibold mb-2">Crop Type</label>
+                            <select id="cropType" required class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-amber-500">
+                                <option value="">Select crop...</option>
+                                <option value="wheat">🌾 Wheat</option>
+                                <option value="corn">🌽 Corn</option>
+                                <option value="rice">🍚 Rice</option>
+                                <option value="vegetables">🥬 Vegetables</option>
+                                <option value="fruit">🍎 Fruit</option>
+                                <option value="cotton">🏷️ Cotton</option>
+                            </select>
+                        </div>
+
+                        <!-- Soil pH -->
+                        <div>
+                            <label class="block text-sm font-semibold mb-2">Soil pH</label>
+                            <input type="number" id="soilPh" required min="4" max="9" step="0.1" placeholder="e.g., 7.0"
+                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-amber-500">
+                        </div>
+
+                        <!-- Current Nitrogen (ppm) -->
+                        <div>
+                            <label class="block text-sm font-semibold mb-2">Nitrogen (N) - ppm</label>
+                            <input type="number" id="nitrogenLevel" required min="0" step="1" placeholder="e.g., 20"
+                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-amber-500">
+                        </div>
+
+                        <!-- Current Phosphorus (ppm) -->
+                        <div>
+                            <label class="block text-sm font-semibold mb-2">Phosphorus (P) - ppm</label>
+                            <input type="number" id="phosphorusLevel" required min="0" step="1" placeholder="e.g., 15"
+                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-amber-500">
+                        </div>
+
+                        <!-- Current Potassium (ppm) -->
+                        <div>
+                            <label class="block text-sm font-semibold mb-2">Potassium (K) - ppm</label>
+                            <input type="number" id="potassiumLevel" required min="0" step="1" placeholder="e.g., 150"
+                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-amber-500">
+                        </div>
+
+                        <!-- Soil Type -->
+                        <div>
+                            <label class="block text-sm font-semibold mb-2">Soil Type</label>
+                            <select id="soilType" required class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-amber-500">
+                                <option value="">Select type...</option>
+                                <option value="loamy">🟤 Loamy</option>
+                                <option value="sandy">🏜️ Sandy</option>
+                                <option value="clayey">⚫ Clayey</option>
+                            </select>
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="flex gap-4 pt-4">
+                            <button type="submit" class="flex-1 px-6 py-3 bg-amber-600 text-white rounded-lg hover:bg-amber-700 font-semibold transition">
+                                🔬 Analyze & Recommend
+                            </button>
+                            <button type="reset" class="px-6 py-3 bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg hover:bg-gray-400 font-semibold transition">
+                                Clear
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- API Endpoint Info -->
+                    <div class="mt-8 space-y-2 p-4 bg-blue-50 dark:bg-blue-900/30 rounded-lg border border-blue-200 dark:border-blue-700">
+                        <p class="text-sm font-mono text-blue-900 dark:text-blue-200">
+                            <strong>API:</strong> POST /api/fertilizer/recommendations
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results Section -->
+            <div class="lg:col-span-1">
+                <div id="resultsContainer" class="bg-white dark:bg-slate-800 rounded-lg shadow p-8 border border-gray-200 dark:border-gray-700 hidden max-h-96 overflow-y-auto">
+                    <h3 class="text-xl font-bold mb-4">✅ NPK Recommendations</h3>
+                    
+                    <div class="space-y-4">
+                        <div id="resultContent" class="text-sm space-y-3"></div>
+                    </div>
+
+                    <button onclick="clearResults()" class="w-full mt-4 px-4 py-2 bg-gray-300 dark:bg-gray-700 rounded-lg hover:bg-gray-400 font-semibold transition">
+                        Clear Results
+                    </button>
+                </div>
+
+                <!-- Empty State -->
+                <div id="emptyState" class="bg-white dark:bg-slate-800 rounded-lg shadow p-8 border border-gray-200 dark:border-gray-700 border-dashed text-center">
+                    <p class="text-4xl mb-2">🧪</p>
+                    <p class="font-semibold">No recommendations yet</p>
+                    <p class="text-sm text-gray-600 dark:text-gray-400">Fill the form to get started</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- NPK Guide -->
+        <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-6 border border-blue-200 dark:border-blue-700">
+                <p class="text-2xl mb-2">🌱</p>
+                <p class="font-semibold mb-2">Nitrogen (N)</p>
+                <p class="text-sm text-gray-600 dark:text-gray-400">Promotes leaf & stem growth. Essential for green color</p>
+            </div>
+            <div class="bg-orange-50 dark:bg-orange-900/20 rounded-lg p-6 border border-orange-200 dark:border-orange-700">
+                <p class="text-2xl mb-2">🌸</p>
+                <p class="font-semibold mb-2">Phosphorus (P)</p>
+                <p class="text-sm text-gray-600 dark:text-gray-400">Supports root development and flowering</p>
+            </div>
+            <div class="bg-purple-50 dark:bg-purple-900/20 rounded-lg p-6 border border-purple-200 dark:border-purple-700">
+                <p class="text-2xl mb-2">⚡</p>
+                <p class="font-semibold mb-2">Potassium (K)</p>
+                <p class="text-sm text-gray-600 dark:text-gray-400">Regulates water & improves stress resistance</p>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        function toggleTheme() {
+            const html = document.documentElement;
+            const isDark = html.classList.contains('dark');
+            if (isDark) {
+                html.classList.remove('dark');
+                localStorage.setItem('theme', 'light');
+                document.getElementById('theme-icon').textContent = '🌙';
+            } else {
+                html.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+                document.getElementById('theme-icon').textContent = '☀️';
+            }
+        }
+
+        function goBack() {
+            window.location.href = '/dashboard';
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = '/';
+        }
+
+        window.addEventListener('load', () => {
+            const theme = localStorage.getItem('theme') || 'light';
+            if (theme === 'dark') {
+                document.documentElement.classList.add('dark');
+                document.getElementById('theme-icon').textContent = '☀️';
+            }
+            initPage();
+        });
+
+        async function initPage() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                window.location.href = '/';
+                return;
+            }
+
+            await loadFarms();
+            document.getElementById('fertilizerForm').addEventListener('submit', handleFormSubmit);
+        }
+
+        async function loadFarms() {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch('/api/farms', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (!response.ok) throw new Error('Failed to load farms');
+
+                const data = await response.json();
+                const farms = data.farms || data.data || [];
+                const farmSelect = document.getElementById('farmId');
+
+                farmSelect.innerHTML = '<option value="">Select a farm...</option>';
+                farms.forEach(farm => {
+                    const option = document.createElement('option');
+                    option.value = farm.id || farm._id;
+                    option.textContent = farm.name || 'Unknown Farm';
+                    farmSelect.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error loading farms:', error);
+            }
+        }
+
+        async function handleFormSubmit(e) {
+            e.preventDefault();
+            
+            const token = localStorage.getItem('token');
+            if (!token) {
+                alert('Please log in first');
+                return;
+            }
+
+            document.getElementById('loading').classList.remove('hidden');
+
+            try {
+                const formData = {
+                    farmId: document.getElementById('farmId').value,
+                    cropType: document.getElementById('cropType').value,
+                    soilPh: parseFloat(document.getElementById('soilPh').value),
+                    nitrogenLevel: parseFloat(document.getElementById('nitrogenLevel').value),
+                    phosphorusLevel: parseFloat(document.getElementById('phosphorusLevel').value),
+                    potassiumLevel: parseFloat(document.getElementById('potassiumLevel').value),
+                    soilType: document.getElementById('soilType').value
+                };
+
+                console.log('Sending fertilizer request:', formData);
+
+                const response = await fetch('/api/fertilizer/recommendations', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.message || 'Failed to get recommendations');
+                }
+
+                const result = await response.json();
+                console.log('Recommendations received:', result);
+
+                displayResults(result);
+
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error: ' + error.message);
+            } finally {
+                document.getElementById('loading').classList.add('hidden');
+            }
+        }
+
+        function displayResults(result) {
+            const container = document.getElementById('resultsContainer');
+            const content = document.getElementById('resultContent');
+            const empty = document.getElementById('emptyState');
+
+            let html = '';
+            if (result.data) {
+                const data = result.data;
+                html = `
+                    ${data.recommendedN ? `
+                    <div class="p-3 bg-blue-50 dark:bg-blue-900/30 rounded">
+                        <p class="font-semibold text-blue-700 dark:text-blue-300">🌱 Nitrogen</p>
+                        <p>${data.recommendedN} kg/acre</p>
+                    </div>
+                    ` : ''}
+                    ${data.recommendedP ? `
+                    <div class="p-3 bg-orange-50 dark:bg-orange-900/30 rounded">
+                        <p class="font-semibold text-orange-700 dark:text-orange-300">🌸 Phosphorus</p>
+                        <p>${data.recommendedP} kg/acre</p>
+                    </div>
+                    ` : ''}
+                    ${data.recommendedK ? `
+                    <div class="p-3 bg-purple-50 dark:bg-purple-900/30 rounded">
+                        <p class="font-semibold text-purple-700 dark:text-purple-300">⚡ Potassium</p>
+                        <p>${data.recommendedK} kg/acre</p>
+                    </div>
+                    ` : ''}
+                    ${data.bestFertilizer ? `
+                    <div class="p-3 bg-green-50 dark:bg-green-900/30 rounded">
+                        <p class="font-semibold text-green-700 dark:text-green-300">✅ Best Fertilizer</p>
+                        <p class="text-xs">${data.bestFertilizer}</p>
+                    </div>
+                    ` : ''}
+                `;
+            } else {
+                html = `<p class="text-green-600">✅ ${result.message || 'Analysis complete'}</p>`;
+            }
+
+            content.innerHTML = html;
+            container.classList.remove('hidden');
+            empty.classList.add('hidden');
+        }
+
+        function clearResults() {
+            document.getElementById('resultsContainer').classList.add('hidden');
+            document.getElementById('emptyState').classList.remove('hidden');
+            document.getElementById('fertilizerForm').reset();
+        }
+    </script>
+</body>
+</html>

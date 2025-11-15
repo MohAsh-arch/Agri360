@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Business Plan - Agri360</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-white dark:bg-slate-900 text-gray-900 dark:text-white transition-colors">
+    <!-- Navbar -->
+    <nav class="sticky top-0 z-50 border-b border-gray-200 dark:border-gray-700 bg-white/80 dark:bg-slate-900/80 backdrop-blur">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center gap-4">
+                    <button onclick="goBack()" class="text-2xl hover:bg-gray-200 dark:hover:bg-gray-700 p-2 rounded">
+                        ← Back
+                    </button>
+                    <h1 class="text-2xl font-bold text-green-600">🌾 Agri360</h1>
+                </div>
+                <div class="flex items-center gap-4">
+                    <button onclick="toggleTheme()" class="p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700">
+                        <span id="theme-icon">🌙</span>
+                    </button>
+                    <button onclick="logout()" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">
+                        Logout
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Loading State -->
+    <div id="loading" class="fixed inset-0 bg-black/50 flex items-center justify-center z-40 hidden">
+        <div class="bg-white dark:bg-slate-800 rounded-lg p-8 text-center">
+            <div class="animate-spin text-4xl mb-4">⏳</div>
+            <p class="text-lg font-semibold">Generating Business Plan...</p>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Page Header -->
+        <div class="mb-8">
+            <h2 class="text-3xl font-bold mb-2">📈 Business Plan</h2>
+            <p class="text-gray-600 dark:text-gray-400">Get AI-powered 3-year financial projections</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Form Section -->
+            <div class="lg:col-span-2">
+                <div class="bg-white dark:bg-slate-800 rounded-lg shadow p-8 border border-gray-200 dark:border-gray-700">
+                    <h3 class="text-2xl font-bold mb-6">📋 Create Business Plan</h3>
+                    
+                    <form id="businessForm" class="space-y-6">
+                        <!-- Plan Title -->
+                        <div>
+                            <label class="block text-sm font-semibold mb-2">Plan Title</label>
+                            <input type="text" id="planTitle" required placeholder="e.g., Organic Wheat Farm 2025"
+                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+
+                        <!-- Planning Horizon -->
+                        <div>
+                            <label class="block text-sm font-semibold mb-2">Planning Horizon</label>
+                            <select id="planHorizon" required class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="1">1 Year</option>
+                                <option value="3" selected>3 Years</option>
+                                <option value="5">5 Years</option>
+                                <option value="10">10 Years</option>
+                            </select>
+                        </div>
+
+                        <!-- Initial Investment -->
+                        <div>
+                            <label class="block text-sm font-semibold mb-2">Initial Investment ($)</label>
+                            <input type="number" id="initialInvestment" required min="0" step="0.01" placeholder="e.g., 50000"
+                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+
+                        <!-- Expected Revenue -->
+                        <div>
+                            <label class="block text-sm font-semibold mb-2">Expected Annual Revenue ($)</label>
+                            <input type="number" id="expectedRevenue" required min="0" step="0.01" placeholder="e.g., 100000"
+                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+
+                        <!-- Operating Costs -->
+                        <div>
+                            <label class="block text-sm font-semibold mb-2">Annual Operating Costs ($)</label>
+                            <input type="number" id="operatingCosts" required min="0" step="0.01" placeholder="e.g., 30000"
+                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+
+                        <!-- Number of Farms -->
+                        <div>
+                            <label class="block text-sm font-semibold mb-2">Number of Farms</label>
+                            <input type="number" id="numberOfFarms" required min="1" step="1" placeholder="e.g., 1"
+                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+
+                        <!-- Production Type -->
+                        <div>
+                            <label class="block text-sm font-semibold mb-2">Production Type</label>
+                            <select id="productionType" required class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="">Select type...</option>
+                                <option value="organic">🌿 Organic</option>
+                                <option value="conventional">🚜 Conventional</option>
+                                <option value="mixed">🔄 Mixed</option>
+                                <option value="greenhouse">🏠 Greenhouse</option>
+                                <option value="hydroponic">💧 Hydroponic</option>
+                            </select>
+                        </div>
+
+                        <!-- Risk Level -->
+                        <div>
+                            <label class="block text-sm font-semibold mb-2">Risk Tolerance</label>
+                            <select id="riskLevel" required class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="low">⬇️ Low Risk (Conservative)</option>
+                                <option value="medium" selected>➡️ Medium Risk (Balanced)</option>
+                                <option value="high">⬆️ High Risk (Aggressive)</option>
+                            </select>
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="flex gap-4 pt-4">
+                            <button type="submit" class="flex-1 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold transition">
+                                🚀 Generate Plan
+                            </button>
+                            <button type="reset" class="px-6 py-3 bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg hover:bg-gray-400 font-semibold transition">
+                                Clear
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- API Endpoint Info -->
+                    <div class="mt-8 space-y-2 p-4 bg-blue-50 dark:bg-blue-900/30 rounded-lg border border-blue-200 dark:border-blue-700">
+                        <p class="text-sm font-mono text-blue-900 dark:text-blue-200">
+                            <strong>API:</strong> POST /api/business
+                        </p>
+                        <p class="text-sm font-mono text-blue-900 dark:text-blue-200">
+                            <strong>List:</strong> GET /api/business
+                        </p>
+                        <p class="text-sm font-mono text-blue-900 dark:text-blue-200">
+                            <strong>Details:</strong> GET /api/business/:id
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results Section -->
+            <div class="lg:col-span-1">
+                <div id="resultsContainer" class="bg-white dark:bg-slate-800 rounded-lg shadow p-8 border border-gray-200 dark:border-gray-700 hidden">
+                    <h3 class="text-xl font-bold mb-4">✅ Plan Generated</h3>
+                    
+                    <div class="space-y-4">
+                        <div id="resultContent" class="text-sm space-y-3"></div>
+                    </div>
+
+                    <button onclick="clearResults()" class="w-full mt-4 px-4 py-2 bg-gray-300 dark:bg-gray-700 rounded-lg hover:bg-gray-400 font-semibold transition">
+                        Clear Results
+                    </button>
+                </div>
+
+                <!-- Empty State -->
+                <div id="emptyState" class="bg-white dark:bg-slate-800 rounded-lg shadow p-8 border border-gray-200 dark:border-gray-700 border-dashed text-center">
+                    <p class="text-4xl mb-2">📊</p>
+                    <p class="font-semibold">No plan yet</p>
+                    <p class="text-sm text-gray-600 dark:text-gray-400">Fill the form and generate a plan</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Saved Plans Section -->
+        <div class="mt-8 bg-white dark:bg-slate-800 rounded-lg shadow p-8 border border-gray-200 dark:border-gray-700">
+            <h3 class="text-2xl font-bold mb-6">📚 Your Business Plans</h3>
+            <div id="plansList" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <p class="text-gray-500 dark:text-gray-400">Loading plans...</p>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        function toggleTheme() {
+            const html = document.documentElement;
+            const isDark = html.classList.contains('dark');
+            if (isDark) {
+                html.classList.remove('dark');
+                localStorage.setItem('theme', 'light');
+                document.getElementById('theme-icon').textContent = '🌙';
+            } else {
+                html.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+                document.getElementById('theme-icon').textContent = '☀️';
+            }
+        }
+
+        function goBack() {
+            window.location.href = '/dashboard';
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = '/';
+        }
+
+        window.addEventListener('load', () => {
+            const theme = localStorage.getItem('theme') || 'light';
+            if (theme === 'dark') {
+                document.documentElement.classList.add('dark');
+                document.getElementById('theme-icon').textContent = '☀️';
+            }
+            initPage();
+        });
+
+        async function initPage() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                window.location.href = '/';
+                return;
+            }
+
+            await loadSavedPlans();
+            document.getElementById('businessForm').addEventListener('submit', handleFormSubmit);
+        }
+
+        async function handleFormSubmit(e) {
+            e.preventDefault();
+            
+            const token = localStorage.getItem('token');
+            if (!token) {
+                alert('Please log in first');
+                return;
+            }
+
+            document.getElementById('loading').classList.remove('hidden');
+
+            try {
+                const formData = {
+                    title: document.getElementById('planTitle').value,
+                    planHorizon: parseInt(document.getElementById('planHorizon').value),
+                    initialInvestment: parseFloat(document.getElementById('initialInvestment').value),
+                    expectedAnnualRevenue: parseFloat(document.getElementById('expectedRevenue').value),
+                    annualOperatingCosts: parseFloat(document.getElementById('operatingCosts').value),
+                    numberOfFarms: parseInt(document.getElementById('numberOfFarms').value),
+                    productionType: document.getElementById('productionType').value,
+                    riskTolerance: document.getElementById('riskLevel').value
+                };
+
+                console.log('Sending business plan request:', formData);
+
+                const response = await fetch('/api/business', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.message || 'Failed to create plan');
+                }
+
+                const result = await response.json();
+                console.log('Plan created:', result);
+
+                displayResults(result);
+                await loadSavedPlans();
+
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error: ' + error.message);
+            } finally {
+                document.getElementById('loading').classList.add('hidden');
+            }
+        }
+
+        function displayResults(result) {
+            const container = document.getElementById('resultsContainer');
+            const content = document.getElementById('resultContent');
+            const empty = document.getElementById('emptyState');
+
+            let html = '';
+            if (result.data) {
+                const plan = result.data;
+                html = `
+                    <div class="p-3 bg-green-50 dark:bg-green-900/30 rounded">
+                        <p class="font-semibold text-green-700 dark:text-green-300">✅ Title</p>
+                        <p>${plan.title || 'Business Plan'}</p>
+                    </div>
+                    ${plan.roi ? `
+                    <div class="p-3 bg-blue-50 dark:bg-blue-900/30 rounded">
+                        <p class="font-semibold text-blue-700 dark:text-blue-300">💹 ROI</p>
+                        <p>${plan.roi}%</p>
+                    </div>
+                    ` : ''}
+                    ${plan.projectedProfit ? `
+                    <div class="p-3 bg-green-50 dark:bg-green-900/30 rounded">
+                        <p class="font-semibold text-green-700 dark:text-green-300">💰 Profit</p>
+                        <p>$${plan.projectedProfit.toLocaleString()}</p>
+                    </div>
+                    ` : ''}
+                    ${plan.breakEvenPoint ? `
+                    <div class="p-3 bg-yellow-50 dark:bg-yellow-900/30 rounded">
+                        <p class="font-semibold text-yellow-700 dark:text-yellow-300">📅 Break-Even</p>
+                        <p>${plan.breakEvenPoint} months</p>
+                    </div>
+                    ` : ''}
+                    ${plan.recommendations ? `
+                    <div class="p-3 bg-purple-50 dark:bg-purple-900/30 rounded">
+                        <p class="font-semibold text-purple-700 dark:text-purple-300">💡 Tips</p>
+                        <p class="text-xs">${Array.isArray(plan.recommendations) ? plan.recommendations.slice(0, 2).join(', ') : plan.recommendations}</p>
+                    </div>
+                    ` : ''}
+                `;
+            } else {
+                html = `<p class="text-green-600">✅ ${result.message || 'Plan created successfully'}</p>`;
+            }
+
+            content.innerHTML = html;
+            container.classList.remove('hidden');
+            empty.classList.add('hidden');
+        }
+
+        function clearResults() {
+            document.getElementById('resultsContainer').classList.add('hidden');
+            document.getElementById('emptyState').classList.remove('hidden');
+            document.getElementById('businessForm').reset();
+        }
+
+        async function loadSavedPlans() {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch('/api/business', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (!response.ok) return;
+
+                const data = await response.json();
+                const plans = data.data || data.plans || [];
+                const container = document.getElementById('plansList');
+
+                if (plans.length === 0) {
+                    container.innerHTML = '<p class="text-gray-500 dark:text-gray-400">No business plans yet. Create one to get started!</p>';
+                    return;
+                }
+
+                container.innerHTML = plans.map(plan => `
+                    <div class="p-4 border border-gray-200 dark:border-gray-600 rounded-lg hover:shadow-md transition">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="font-semibold">${plan.title || 'Business Plan'}</p>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">${plan.planHorizon || 3}-year plan</p>
+                                ${plan.roi ? `<p class="text-sm text-green-600 dark:text-green-400">ROI: ${plan.roi}%</p>` : ''}
+                                <p class="text-xs text-gray-500 mt-1">${new Date(plan.createdAt).toLocaleDateString()}</p>
+                            </div>
+                            <button onclick="viewPlanDetails('${plan._id || plan.id}')" class="px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700">
+                                View
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+
+            } catch (error) {
+                console.error('Error loading plans:', error);
+            }
+        }
+
+        function viewPlanDetails(planId) {
+            alert('View plan: ' + planId + '\n\nAPI: GET /api/business/' + planId);
+        }
+    </script>
+</body>
+</html>

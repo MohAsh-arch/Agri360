@@ -1,0 +1,161 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  /* Agri360 Color Palette */
+  /* Primary: Vibrant Green (#4CAF50) - Growth, Health, Nature */
+  /* Secondary: Deep Blue (#1976D2) - Trust, Reliability, Technology */
+  /* Accent: Deep Yellow/Amber (#FFC107) - Optimism, Alertness, Harvest */
+  /* Background: Off-White (#F9F9F9) - Cleanliness, Clarity */
+  /* Text: Dark Charcoal (#212121) - Authority, Legibility */
+  
+  --background: #F9F9F9;
+  --foreground: #212121;
+  --card: #FFFFFF;
+  --card-foreground: #212121;
+  --popover: #FFFFFF;
+  --popover-foreground: #212121;
+  --primary: #4CAF50;
+  --primary-foreground: #FFFFFF;
+  --secondary: #1976D2;
+  --secondary-foreground: #FFFFFF;
+  --muted: #E0E0E0;
+  --muted-foreground: #666666;
+  --accent: #FFC107;
+  --accent-foreground: #212121;
+  --destructive: #F44336;
+  --destructive-foreground: #FFFFFF;
+  --border: #E0E0E0;
+  --input: #F5F5F5;
+  --ring: #4CAF50;
+  --chart-1: #4CAF50;
+  --chart-2: #1976D2;
+  --chart-3: #FFC107;
+  --chart-4: #FF9800;
+  --chart-5: #9C27B0;
+  --radius: 0.5rem;
+}
+
+.dark {
+  --background: #1A1A1A;
+  --foreground: #F5F5F5;
+  --card: #2D2D2D;
+  --card-foreground: #F5F5F5;
+  --popover: #2D2D2D;
+  --popover-foreground: #F5F5F5;
+  --primary: #66BB6A;
+  --primary-foreground: #1A1A1A;
+  --secondary: #42A5F5;
+  --secondary-foreground: #1A1A1A;
+  --muted: #424242;
+  --muted-foreground: #BDBDBD;
+  --accent: #FFD54F;
+  --accent-foreground: #1A1A1A;
+  --destructive: #EF5350;
+  --destructive-foreground: #F5F5F5;
+  --border: #424242;
+  --input: #3F3F3F;
+  --ring: #66BB6A;
+  --chart-1: #66BB6A;
+  --chart-2: #42A5F5;
+  --chart-3: #FFD54F;
+  --chart-4: #FFA726;
+  --chart-5: #AB47BC;
+}
+
+@theme inline {
+  --font-sans: 'Geist', 'Geist Fallback';
+  --font-mono: 'Geist Mono', 'Geist Mono Fallback';
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+@keyframes gradient-shift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes float-orb {
+  0%, 100% {
+    transform: translate(0, 0);
+  }
+  25% {
+    transform: translate(20px, -30px);
+  }
+  50% {
+    transform: translate(-20px, 20px);
+  }
+  75% {
+    transform: translate(30px, 10px);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply text-foreground;
+    background: linear-gradient(-45deg, #F9F9F9, #E8F5E9, #F0F4FF, #FFF9C4);
+    background-size: 400% 400%;
+    animation: gradient-shift 15s ease infinite;
+    position: relative;
+    overflow-x: hidden;
+  }
+  
+  body::before {
+    content: '';
+    position: fixed;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: 
+      radial-gradient(circle at 20% 50%, rgba(76, 175, 80, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 80% 80%, rgba(25, 118, 210, 0.08) 0%, transparent 50%),
+      radial-gradient(circle at 50% 20%, rgba(255, 193, 7, 0.06) 0%, transparent 50%);
+    animation: float-orb 20s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 0;
+  }
+  
+  html {
+    position: relative;
+    background: transparent;
+  }
+}
